@@ -1,11 +1,11 @@
 from tkinter import *
-import mysql.connector
+from database import get_db
 from tkinter import messagebox
 
 
 def dele3():
     def remove():
-        conn = mysql.connector.connect(host='localhost', user='root', password='madhu123', database='emp')
+        conn = get_db()
         cur = conn.cursor()
         if (delete_entry.get() == ""):
             messagebox.showinfo('user', "Enter the ID :")
@@ -13,8 +13,8 @@ def dele3():
             cur.execute(f"delete from routes where route_no={delete_entry.get()}")
             conn.commit()
             messagebox.showinfo('user', "Route Deleted Successfully")
+        conn.close()
 
-    # root = Tk()
     root = Toplevel()
     root.title("delete_buses")
     root.geometry("800x430")

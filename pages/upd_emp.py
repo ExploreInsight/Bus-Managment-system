@@ -1,5 +1,5 @@
 from tkinter import *
-import mysql.connector
+from database import get_db
 from tkinter import messagebox
 from tkinter import ttk
 from tkcalendar import DateEntry
@@ -9,7 +9,7 @@ from tkinter import filedialog
 def upd1():
 
     def view():
-        conn = mysql.connector.connect(host='localhost', user='root', password='madhu123', database='emp')
+        conn = get_db()
         cur = conn.cursor()
         cur.execute(
             f"select name_emp, father_name,dob,gender,email,phone_no,desiganation,address from add_emp where id_emp={updateentry.get()}")
@@ -18,6 +18,7 @@ def upd1():
         for i in row:
             list[j].set(i)
             j += 1
+        conn.close()
 
     global_img_path = ""
     def select_image():
@@ -31,12 +32,13 @@ def upd1():
         global_img_path = img
 
     def upd():
-        conn = mysql.connector.connect(host='localhost', user='root', password='madhu123', database='emp')
+        conn = get_db()
         cur = conn.cursor()
         cur.execute(
             f"update add_emp SET name_emp='{update_name.get()}', father_name='{update_father.get()}',dob='{t1.get()}',gender='{t2.get()}',email='{t3.get()}',phone_no='{t4.get()}',desiganation='{t5.get()}',address='{t6.get()}',image='{global_img_path}' where id_emp ='{updateentry.get()}'")
         messagebox.showinfo("Updated", 'updated successfully')
         conn.commit()
+        conn.close()
 
     root = Toplevel()
     root.title('Update Employee')
@@ -62,9 +64,6 @@ def upd1():
 
     t2 = Entry(root, text="emp_name", bg='white', width=30,textvariable=list[3] )
     t2.place(x=400, y=200)
-    # var = StringVar(value='M')
-    # t2 =Radiobutton(root, text='Male', variable=var, value='M',width='5', bg='white').place(x=400, y=200)
-    # t2= Radiobutton(root, text='Female', variable=var, value='F', width='6', bg='white',textvariable=list[3]).place(x=500, y=200)
 
     t3 = Entry(root, text="emp_name", bg='white',fg='blue', width=30,textvariable=list[4])
     t3.place(x=410, y=250)
@@ -77,11 +76,7 @@ def upd1():
     t5.current(newindex=1)
     t5.place(x=450, y=345)
 
-    image_path = r"c:\Users\Lenovo\Pictures\Saved Pictures\oip.jpg"
-    image = Image.open(image_path)
-    image_resized = image.resize((118, 100))
-    photo0 = ImageTk.PhotoImage(image_resized)
-    photo_label = Label(root, image=photo0)
+    photo_label = Label(root)
     photo_label.place(x=750, y=30)
 
     photo_button = Button(root, text='SELECT PHOTO', width=14, font=('arial', 10, 'bold'), bg="blue", command=select_image)
@@ -94,5 +89,3 @@ def upd1():
     update_button.place(x=794, y=446, height=30)
 
     root.mainloop()
-
-

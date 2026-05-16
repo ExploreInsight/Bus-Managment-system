@@ -3,30 +3,20 @@ from tkcalendar import DateEntry
 from tkinter import ttk
 from PIL import Image, ImageTk
 from tkinter import filedialog,messagebox
-import mysql.connector
-
-conn = mysql.connector.connect(host='localhost', user='root', password='madhu123', database='emp')
-if conn.is_connected():
-    print("connection established")
-else:
-    print("connection failed")
-cur = conn.cursor()
-cur.execute("SHOW tables")
-for x in cur:
-    print(x)
+from database import get_db
 
 
 def funct(win):
     global_img_path = ""
     def select_image():
-            nonlocal global_img_path
-            img = filedialog.askopenfilename()
-            image1 = Image.open(img)
-            image0_resized = image1.resize((100, 100))
-            photo0 = ImageTk.PhotoImage(image0_resized)
-            photo_label.config(image=photo0)
-            photo_label.image = photo0
-            global_img_path = img
+        nonlocal global_img_path
+        img = filedialog.askopenfilename()
+        image1 = Image.open(img)
+        image0_resized = image1.resize((100, 100))
+        photo0 = ImageTk.PhotoImage(image0_resized)
+        photo_label.config(image=photo0)
+        photo_label.image = photo0
+        global_img_path = img
 
     def validate_email():
         email = t5.get()
@@ -36,6 +26,8 @@ def funct(win):
             messagebox.showwarning("Warning","Input valid Email Format")
 
     def submit():
+        conn = get_db()
+        cur = conn.cursor()
         name_emp = t2.get()
         father_name = t3.get()
         dob = t4.get()
@@ -49,6 +41,7 @@ def funct(win):
         cur.execute(insert_query)
         messagebox.showinfo("Data submitted","Data submitted successfully")
         conn.commit()
+        conn.close()
 
     def clear():
         t1.delete(0, END)
@@ -63,7 +56,7 @@ def funct(win):
     root = Toplevel(win)
     root.title("Employee registration")
     root.geometry("833x504")
-    photo1 = PhotoImage(file="emp_reg.png")
+    photo1 = PhotoImage(file="assests/emp_reg.png")
     l1 = Label(root, image=photo1)
     l1.place(x=0,y=0)
     t1 = Entry(root,width='25',bg='white')
@@ -90,12 +83,7 @@ def funct(win):
     t8 = Entry(root, width='25', bg='white')
     t8.place(x=445, y=417)
 
-    # create a photo_image
-    image_path = r"c:\Users\Lenovo\Pictures\Saved Pictures\oip.jpg"
-    image = Image.open(image_path)
-    image_resized = image.resize((118, 100))
-    photo = ImageTk.PhotoImage(image_resized)
-    photo_label = Label(root, image=photo)
+    photo_label = Label(root)
     photo_label.place(x=690, y=30)
     photo_button = Button(root, text='SELECT PHOTO',width=14, font=('arial', 10, 'bold'), bg="blue",command=select_image)
     photo_button.place(x=690, y=130)
@@ -106,4 +94,3 @@ def funct(win):
     b2.place(x=535, y=470)
 
     root.mainloop()
-

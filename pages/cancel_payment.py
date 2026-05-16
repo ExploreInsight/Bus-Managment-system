@@ -1,19 +1,17 @@
 from tkinter import *
-import mysql.connector
+from database import get_db
 from tkinter import messagebox
-
-conn = mysql.connector.connect(host='localhost', user='root', password='madhu123', database='emp')
-cur = conn.cursor()
 
 
 def cancel(win):
-# def cancel():
     def enter():
         if (login_name.get == ""):
             messagebox.showerror("Error", "Please Enter The Login Name ?")
         else:
+            conn = get_db()
+            cur = conn.cursor()
             cur.execute(
-                f"select start, end, seat_no, route_no, bus_no from emp.booking where login_name='{login_name.get()}'")
+                f"select start, end, seat_no, route_no, bus_no from booking where login_name='{login_name.get()}'")
             row = cur.fetchone()
             loc.insert(0, row[0])
             det.insert(0, row[1])
@@ -25,32 +23,32 @@ def cancel(win):
             bus.insert(0, bus_no)
 
             cur.execute(
-                f"select dep_time, reach_time from emp.route_duty_allotment where route_no='{route_no}' and bus_no='{bus_no}'")
+                f"select dep_time, reach_time from route_duty_allotment where route_no='{route_no}' and bus_no='{bus_no}'")
             row = cur.fetchone()
             dep.insert(0, row[0])
             rec.insert(0, row[1])
 
-            cur.execute(f"select route_distance from emp.routes where route_no='{route_no}'")
+            cur.execute(f"select route_distance from routes where route_no='{route_no}'")
             row = cur.fetchone()
             charge_multiplier = 2
             total_charges = int(row[0]) * charge_multiplier
             charges.insert(0, total_charges)
+            conn.close()
 
     def cancel_pay():
-        cur.execute(f"select * from emp.pay where login_name='{login_name.get()}'")
-        row = cur.fetchone()
-        print(row)
         if (login_name.get() == ""):
             messagebox.showinfo('user', "Enter the ID :")
         else:
+            conn = get_db()
+            cur = conn.cursor()
             cur.execute(f"delete from booking where login_name={login_name.get()}")
             conn.commit()
-            messagebox.showinfo('user', "employee deleted successfully")
+            messagebox.showinfo('user', "Booking cancelled successfully")
+            conn.close()
 
 
 
     root = Toplevel()
-    # root = Tk()
     root.title("cancel booking")
     root.geometry("810x430")
     photo = PhotoImage(file="assests/cancel_payment.png")
@@ -109,5 +107,3 @@ def cancel(win):
     b1.place(x=665, y=396, height=30)
 
     root.mainloop()
-
-# cancel()

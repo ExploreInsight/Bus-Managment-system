@@ -1,41 +1,33 @@
 from tkinter import *
-import mysql.connector
+from database import get_db
 import next
 from tkinter import messagebox
 import tkinter.font as f
 
 def new():
-    # Get the entered login name and password
     user = login_name.get()
     pass_word = password1.get()
 
-    # Check if login credentials are valid
     if user == "" or pass_word == "":
         messagebox.showinfo('user', "Enter valid details")
     else:
         try:
-            # Establish a database connection
-            conn = mysql.connector.connect(host='localhost', user='root', password='madhu123', database='emp')
+            conn = get_db()
             cur = conn.cursor()
-
-            # Execute a query (replace this with your actual authentication logic)
-            query = "SELECT * FROM admin WHERE username = %s AND password = %s"
-            cur.execute(query, (user, pass_word))
+            cur.execute("SELECT * FROM admin WHERE username = ? AND password = ?", (user, pass_word))
             result = cur.fetchone()
 
             if result:
-                # If credentials are valid, proceed to the next step
                 root.withdraw()
                 next.next(root)
                 messagebox.showinfo('Info', 'Login Successfully')
             else:
                 messagebox.showinfo('Info', 'Invalid Login Credentials')
 
-        except mysql.connector.Error as e:
+        except Exception as e:
             print(f"Error: {e}")
 
         finally:
-            # Close the cursor and connection
             cur.close()
             conn.close()
 
@@ -43,7 +35,7 @@ root = Tk()
 root.title("Bus Management System")
 root.geometry("1020x540")
 myFont = f.Font(weight="bold")
-photo = PhotoImage(file='assests\start2.png')
+photo = PhotoImage(file='assests/start2.png')
 l3 = Label(root, image=photo)
 l3.pack()
 

@@ -1,31 +1,32 @@
 from tkinter import *
-import mysql.connector
+from database import get_db
 from tkinter import messagebox
-
-conn = mysql.connector.connect(host='localhost', user='root', password='madhu123', database='emp')
-cur = conn.cursor()
 
 
 def pay_ment(win):
-# def pay_ment():
     def book():
-        cur.execute(f"select * from emp.pay where login_name='{login_name.get()}'")
+        conn = get_db()
+        cur = conn.cursor()
+        cur.execute(f"select * from pay where login_name='{login_name.get()}'")
         row = cur.fetchone()
         print(row)
-        if (row == (None)):
-            insert_query = f"insert into emp.pay(login_name, bus_no, start, end, dep_time, rech_time, total_charges, seat_no) values('{login_name.get()}','{bus.get()}','{loc.get()}','{det.get()}','{dep.get()}','{rec.get()}','{charges.get()}','{seat.get()}')"
+        if (row is None):
+            insert_query = f"insert into pay(login_name, bus_no, start, end, dep_time, rech_time, total_charges, seat_no) values('{login_name.get()}','{bus.get()}','{loc.get()}','{det.get()}','{dep.get()}','{rec.get()}','{charges.get()}','{seat.get()}')"
             cur.execute(insert_query)
             messagebox.showinfo("Done", "Payment done!")
             conn.commit()
         else:
             messagebox.showinfo("Psych!", "Already paid!!")
+        conn.close()
 
     def enter():
         if (login_name.get == ""):
             messagebox.showerror("Error", "Please Enter The Login Name ?")
         else:
+            conn = get_db()
+            cur = conn.cursor()
             cur.execute(
-                f"select start, end, seat_no, route_no, bus_no from emp.booking where login_name='{login_name.get()}'")
+                f"select start, end, seat_no, route_no, bus_no from booking where login_name='{login_name.get()}'")
             row = cur.fetchone()
             loc.insert(0, row[0])
             det.insert(0, row[1])
@@ -36,18 +37,18 @@ def pay_ment(win):
             bus_no = row[4]
             bus.insert(0, bus_no)
             cur.execute(
-                f"select dep_time, reach_time from emp.route_duty_allotment where route_no='{route_no}' and bus_no='{bus_no}'")
+                f"select dep_time, reach_time from route_duty_allotment where route_no='{route_no}' and bus_no='{bus_no}'")
             row = cur.fetchone()
             dep.insert(0, row[0])
             rec.insert(0, row[1])
-            cur.execute(f"select route_distance from emp.routes where route_no='{route_no}'")
+            cur.execute(f"select route_distance from routes where route_no='{route_no}'")
             row = cur.fetchone()
             charge_multiplier = 2
             total_charges = int(row[0]) * charge_multiplier
             charges.insert(0, total_charges)
+            conn.close()
 
     root = Toplevel()
-    # root = Tk()
     root.title('payment')
     root.geometry("800x430")
     photo = PhotoImage(file="assests/payment.png")
@@ -105,6 +106,3 @@ def pay_ment(win):
     b1.place(x=660, y=390, height=30)
 
     root.mainloop()
-
-
-# pay_ment()

@@ -1,11 +1,11 @@
 from tkinter import *
-import mysql.connector
+from database import get_db
 from tkinter import messagebox
 
 
 def upd3():
     def view():
-        conn = mysql.connector.connect(host='localhost', user='root', password='madhu123', database='emp')
+        conn = get_db()
         cur = conn.cursor()
         cur.execute(
             f"select start,end,route_distance from routes where route_no='{num.get()}'")
@@ -14,13 +14,15 @@ def upd3():
         for i in row:
             list[j].set(i)
             j += 1
+        conn.close()
 
     def upd():
-            conn = mysql.connector.connect(host='localhost', user='root', password='madhu123', database='emp')
-            cur = conn.cursor()
-            cur.execute(f"update routes SET start='{start.get()}',end='{end.get()}',route_distance='{dis.get()}' where route_no ='{num.get()}'")
-            messagebox.showinfo("Updated", 'updated successfully')
-            conn.commit()
+        conn = get_db()
+        cur = conn.cursor()
+        cur.execute(f"update routes SET start='{start.get()}',end='{end.get()}',route_distance='{dis.get()}' where route_no ='{num.get()}'")
+        messagebox.showinfo("Updated", 'updated successfully')
+        conn.commit()
+        conn.close()
 
     root = Toplevel()
     root.title("update routes")

@@ -1,8 +1,6 @@
 from tkinter import *
 from tkinter import ttk
-import mysql.connector
-conn = mysql.connector.connect(host='localhost', user='root', password='madhu123', database='emp')
-cur = conn.cursor()
+from database import get_db
 
 def buses():
     root = Tk()
@@ -14,15 +12,15 @@ def buses():
     tv = ttk.Treeview(root)
 
     def get_bus_info():
-        """return list of tuples"""
+        conn = get_db()
+        cur = conn.cursor()
         cur.execute(f"select bus_no,bus_name,no_of_seats,model_no,purchase_date,purchase_cost from bus")
-        return cur.fetchall()
+        rows = cur.fetchall()
+        conn.close()
+        return rows
 
-    # specify columns, where each element in tuple is treeViewID
     tv['columns'] = ('bus_no', 'bus_name', 'no_of_seats', 'model_no', 'purchase_date', 'purchase_cost')
 
-    # format columns using treeViewID
-    # column with #0ID is a ghost column
     tv.column('#0', width=-30, minwidth=0)
     tv.column('bus_no', width=20, minwidth=5)
     tv.column('bus_name', width=40, minwidth=20)
@@ -32,7 +30,6 @@ def buses():
     tv.column('purchase_cost', width=40, minwidth=20)
 
 
-    # specify headings to columns
     tv.heading('bus_no', text="Bus Number")
     tv.heading('bus_name', text="Bus Name")
     tv.heading('no_of_seats', text="Seats")
@@ -41,7 +38,6 @@ def buses():
     tv.heading('purchase_cost', text="Buying Cost")
 
 
-    # inserting data into treeView
     rows = get_bus_info()
     for row in rows:
         tv.insert(parent='', index='end', values=row)

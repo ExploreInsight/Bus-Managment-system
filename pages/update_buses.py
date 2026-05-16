@@ -1,12 +1,12 @@
 from tkinter import *
-import mysql.connector
+from database import get_db
 from tkinter import messagebox
 from tkcalendar import DateEntry
 
 
 def upd2():
     def view():
-        conn = mysql.connector.connect(host='localhost', user='root', password='madhu123', database='emp')
+        conn = get_db()
         cur = conn.cursor()
         cur.execute(
             f"select model_no,bus_name,no_of_seats,purchase_date,purchase_cost from bus where bus_no='{num.get()}'")
@@ -15,14 +15,16 @@ def upd2():
         for i in row:
             list[j].set(i)
             j += 1
+        conn.close()
 
     def update():
-            conn = mysql.connector.connect(host='localhost', user='root', password='madhu123', database='emp')
-            cur = conn.cursor()
-            cur.execute(
-                f"update bus SET model_no ='{m_num.get()}',bus_name='{name.get()}',no_of_seats='{no.get()}',purchase_date='{purch_date.get()}',purchase_cost='{purch_cost.get()}' where bus_no ='{num.get()}'")
-            messagebox.showinfo("Updated", 'updated successfully')
-            conn.commit()
+        conn = get_db()
+        cur = conn.cursor()
+        cur.execute(
+            f"update bus SET model_no ='{m_num.get()}',bus_name='{name.get()}',no_of_seats='{no.get()}',purchase_date='{purch_date.get()}',purchase_cost='{purch_cost.get()}' where bus_no ='{num.get()}'")
+        messagebox.showinfo("Updated", 'updated successfully')
+        conn.commit()
+        conn.close()
 
     root = Toplevel()
     root.title("update_buses")

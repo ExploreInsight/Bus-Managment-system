@@ -1,17 +1,14 @@
-
 from tkinter import *
-import mysql.connector
+from database import get_db
 from PIL import Image, ImageTk
 from tkinter import messagebox
-from io import StringIO
-import io
 
-conn = mysql.connector.connect(host='localhost', user='root', password='madhu123', database='emp')
-cur = conn.cursor()
 
 def sea1():
 
     def view():
+        conn = get_db()
+        cur = conn.cursor()
         cur.execute(f"select name_emp, father_name,dob,gender,email,phone_no,desiganation,address from add_emp where id_emp='{searchentry.get()}'")
         row = cur.fetchone()
         if row is not None:
@@ -22,9 +19,11 @@ def sea1():
             show_image()
         else:
             messagebox.showinfo("Not found", "Employee ID does not exist!")
+        conn.close()
 
     def show_image():
-        print(searchentry.get())
+        conn = get_db()
+        cur = conn.cursor()
         cur.execute(f"select image from add_emp where id_emp='{searchentry.get()}'")
         r = cur.fetchone()
         if r is not None:
@@ -35,9 +34,9 @@ def sea1():
             photo1 = ImageTk.PhotoImage(image)
             photo_label.config(image=photo1)
             photo_label.image = photo1
+        conn.close()
 
     root = Toplevel()
-    # root = Tk()
     root.title('Search Employee')
     root.geometry('960x515')
     photo = PhotoImage(file='assests/search_emp.png')
@@ -76,12 +75,7 @@ def sea1():
     t6 = Entry(root, text="emp_name", textvariable=list[7], bg='white', width=30)
     t6.place(x=430, y=410)
 
-    # photo image
     photo_label = Label(root)
     photo_label.place(x=800, y=30)
 
-    # r"c:\Users\Lenovo\Pictures\Saved Pictures\oip.jpg"
     root.mainloop()
-
-
-# sea1()

@@ -1,10 +1,10 @@
 from tkinter import *
-import mysql.connector
+from database import get_db
 
 
 def sea3():
     def view():
-        conn = mysql.connector.connect(host='localhost', user='root', password='madhu123', database='emp')
+        conn = get_db()
         cur = conn.cursor()
         cur.execute(
             f"select start,end,route_distance,route_name from routes where route_no='{num.get()}'")
@@ -13,6 +13,7 @@ def sea3():
         for i in row:
             list[j].set(i)
             j += 1
+        conn.close()
 
     root = Toplevel()
     root.title("search route")

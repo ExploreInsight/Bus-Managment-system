@@ -1,12 +1,12 @@
 from tkinter import *
-import mysql.connector
+from database import get_db
 from tkinter import messagebox
 
 
 def dele1():
 
     def remove():
-        conn = mysql.connector.connect(host='localhost', user='root', password='madhu123', database='emp')
+        conn = get_db()
         cur = conn.cursor()
         if(delete_entry.get()==""):
             messagebox.showinfo('user', "Enter the ID :")
@@ -14,6 +14,7 @@ def dele1():
             cur.execute(f"delete from add_emp where id_emp={delete_entry.get()}")
             conn.commit()
             messagebox.showinfo('user', "employee deleted successfully")
+        conn.close()
 
     root = Toplevel()
     root.title('Delete Employee')

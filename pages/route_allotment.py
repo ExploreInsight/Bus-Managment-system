@@ -1,36 +1,38 @@
 from tkinter import *
-import mysql.connector
+from database import get_db
 from tkinter import messagebox
 from tkinter import ttk
-
-conn = mysql.connector.connect(host='localhost', user='root', password='madhu123', database='emp')
-cur = conn.cursor()
 
 
 def allot():
     def submit():
+        conn = get_db()
+        cur = conn.cursor()
         insert_query = f" INSERT INTO route_duty_allotment (route_no,dep_time,reach_time,bus_no,id_emp) VALUES ('{num.get()}','{dep.get()}','{rec.get()}','{bus.get()}','{id.get()}')"
         cur.execute(insert_query)
         messagebox.showinfo("Data submitted", "Route Successfully Allotted")
         conn.commit()
+        conn.close()
 
     def show_info():
+        conn = get_db()
+        cur = conn.cursor()
         nonlocal emp_ids
         nonlocal route_nums
         nonlocal bus_nums
         
-        cur.execute(f"select id_emp from emp.add_emp")
+        cur.execute(f"select id_emp from add_emp")
         rows = cur.fetchall()
         for i in rows:
             emp_ids.append(i[0])
 
-        cur.execute(f"select route_no from emp.routes")
+        cur.execute(f"select route_no from routes")
         rows = cur.fetchall()
         for i in rows:
             route_nums.append(i[0])
 
         bus_nums = []
-        cur.execute(f"select bus_no from emp.bus")
+        cur.execute(f"select bus_no from bus")
         rows = cur.fetchall()
         for i in rows:
             bus_nums.append(i[0])
@@ -38,9 +40,9 @@ def allot():
         id['values'] = emp_ids
         num['values'] = route_nums
         bus['values'] = bus_nums
+        conn.close()
 
     root = Toplevel()
-    # root = Tk()
     root.title("route_allotment")
     root.geometry("800x425")
     photo = PhotoImage(file='assests/allotment.png')
@@ -76,5 +78,3 @@ def allot():
     b1.place(x=550, y=340,height=35)
 
     root.mainloop()
-
-# allot()

@@ -1,8 +1,6 @@
 from tkinter import *
 from tkinter import ttk
-import mysql.connector
-conn = mysql.connector.connect(host='localhost', user='root', password='madhu123', database='emp')
-cur = conn.cursor()
+from database import get_db
 
 def inquiry1(win):
     root = Toplevel()
@@ -10,22 +8,19 @@ def inquiry1(win):
     width = 860
     height = 460
     root.geometry("860x440")
-    # photo = PhotoImage(file="inquiry.png")
-    # label = Label(root, image=photo)
-    # label.pack()
 
     tv = ttk.Treeview(root)
 
     def get_route_info():
-        """return list of tuples"""
-        cur.execute(f"select routes.route_no,  route_name, route_distance, start, end, bus_no, dep_time, reach_time from emp.routes left join emp.route_duty_allotment on emp.routes.route_no=emp.route_duty_allotment.route_no")
-        return cur.fetchall()
+        conn = get_db()
+        cur = conn.cursor()
+        cur.execute(f"select routes.route_no,  route_name, route_distance, start, end, bus_no, dep_time, reach_time from routes left join route_duty_allotment on routes.route_no=route_duty_allotment.route_no")
+        rows = cur.fetchall()
+        conn.close()
+        return rows
 
-    # specify columns, where each element in tuple is treeViewID
     tv['columns'] = ('route_no', 'route_name', 'route_distance', 'start', 'end', 'bus_no', 'dep_time', 'reach_time')
 
-    # format columns using treeViewID
-    # column with #0ID is a ghost column
     tv.column('#0', width=-30, minwidth=0)
     tv.column('route_no', width=20, minwidth=5)
     tv.column('route_name', width=40, minwidth=20)
@@ -36,7 +31,6 @@ def inquiry1(win):
     tv.column('dep_time', width=40, minwidth=20)
     tv.column('reach_time', width=40, minwidth=20)
 
-    # specify headings to columns
     tv.heading('route_no', text="Route Number")
     tv.heading('route_name', text="Route Name")
     tv.heading('route_distance', text="Distance")
@@ -46,7 +40,6 @@ def inquiry1(win):
     tv.heading('dep_time', text="Departure Time")
     tv.heading('reach_time', text="Reaching Time")
 
-    # inserting data into treeView
     rows = get_route_info()
     for row in rows:
         tv.insert(parent='', index='end', values=row)

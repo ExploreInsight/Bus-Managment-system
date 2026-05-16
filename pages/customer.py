@@ -1,20 +1,19 @@
 from tkinter import *
-import mysql.connector
+from database import get_db
 from tkinter import messagebox, ttk, filedialog
 from tkcalendar import DateEntry
-conn = mysql.connector.connect(host='localhost', user='root', password='madhu123', database='emp')
-cur = conn.cursor()
 
 
-# def custom(win):
 def custom():
     def next_page():
         if phone_num.get() == "" or email.get() == "":
             messagebox.showinfo("Search", "Search first!")
             return
-        cur.execute(f"select * from emp.customer where login_name='{login_name.get()}'")
+        conn = get_db()
+        cur = conn.cursor()
+        cur.execute(f"select * from customer where login_name='{login_name.get()}'")
         user_registered = cur.fetchone()
-        cur.execute(f"SELECT * FROM emp.booking where login_name='{login_name.get()}'")
+        cur.execute(f"SELECT * FROM booking where login_name='{login_name.get()}'")
         user_booked = cur.fetchone()
         if (user_registered is not None and user_booked is None):
             seats = ""
@@ -22,18 +21,17 @@ def custom():
                 seats += str(i) + " "
 
             cur.execute(
-                f"select route_no from emp.routes where start='{location.get()}' and end='{destination.get()}' and route_name='{route.get()}'")
+                f"select route_no from routes where start='{location.get()}' and end='{destination.get()}' and route_name='{route.get()}'")
             rows = cur.fetchall()
             if rows != None:
                 row = rows[0]
                 route_no = row[0]
 
                 cur.execute(
-                    f"insert into emp.booking(login_name, route_name, start, end, seat_no, route_no, bus_no) values('{login_name.get()}', '{route.get()}', '{location.get()}', '{destination.get()}', '{seats}', '{route_no}', '{bus_no.get()}')")
+                    f"insert into booking(login_name, route_name, start, end, seat_no, route_no, bus_no) values('{login_name.get()}', '{route.get()}', '{location.get()}', '{destination.get()}', '{seats}', '{route_no}', '{bus_no.get()}')")
                 conn.commit()
 
-                cur.execute(f"select avail_seats from emp.bus where bus_no='{bus_no.get()}'")
-                # cur.execute(f"select avail_seats from emp.bus where bus_no='hp 22 072'")
+                cur.execute(f"select avail_seats from bus where bus_no='{bus_no.get()}'")
                 avail_seats = cur.fetchone()[0].rstrip()
                 avail_seats = avail_seats.split(" ")
                 selected_seats = seats
@@ -45,7 +43,7 @@ def custom():
                 for i in to_remove_seats:
                     r_seats += str(i) + " "
 
-                cur.execute(f"update emp.bus set avail_seats='{r_seats}' where bus_no='{bus_no.get()}'")
+                cur.execute(f"update bus set avail_seats='{r_seats}' where bus_no='{bus_no.get()}'")
                 conn.commit()
 
                 messagebox.showinfo("Data submitted", "Data submitted successfully,Go To Payment")
@@ -54,20 +52,26 @@ def custom():
                 messagebox.showinfo("F", "You are not registered!")
             else:
                 messagebox.showinfo("Booked", "You have already booked!")
+        conn.close()
 
     def combo_btn():
+        conn = get_db()
+        cur = conn.cursor()
         search = f"select start from routes"
         cur.execute(search)
         data = []
         for row in cur.fetchall():
             data.append(row[0])
+        conn.close()
         return data
 
     def get_route():
+        conn = get_db()
+        cur = conn.cursor()
         nonlocal r_name
         nonlocal data
         nonlocal b_no
-        cur.execute(f"select route_name from emp.routes")
+        cur.execute(f"select route_name from routes")
         for row in cur.fetchall():
             r_name.append(row[0])
 
@@ -83,9 +87,9 @@ def custom():
         for row in cur.fetchall():
             data.append(row[0])
         destination['values'] = data
+        conn.close()
 
     root = Toplevel()
-    # root = Tk()
     root.title("customer details")
     root.geometry("960x510")
     photo = PhotoImage(file="assests/customer_booking.png")
@@ -168,36 +172,31 @@ def custom():
         if bus_no.get() != "":
             nonlocal seat_no_values
             seat_no.config(state="normal")
-            cur.execute(f"select avail_seats from emp.bus where bus_no='{bus_no.get()}'")
-            # cur.execute(f"select avail_seats from emp.bus where bus_no='hp 22 072'")
+            conn = get_db()
+            cur = conn.cursor()
+            cur.execute(f"select avail_seats from bus where bus_no='{bus_no.get()}'")
             avail_seats = cur.fetchone()[0].rstrip()
             avail_seats = avail_seats.split(" ")
 
             seat_no_values = [int(i) for i in avail_seats]
             seat_no['values'] = seat_no_values
             print(seat_no_values)
+            conn.close()
 
     seat_no.set("--select--")
     bus_no.bind("<<ComboboxSelected>>", get_seats)
 
     selected_seat_no = Listbox(root, width=30)
     selected_seat_no.place(x=750, y=335)
-    # for i in range(len()):
-    #      seat_no.insert(END,x[i])
-    #      seat_no.itemconfig(i)
     y_scroll = ttk.Scrollbar(selected_seat_no, orient='vertical')
     y_scroll.config(command=selected_seat_no.yview)
     selected_seat_no.config(yscrollcommand=y_scroll.set)
-
-    # y_scroll.pack(side='right', fill='y')
 
     booked_seats = []
 
     def selected_seat(e):
         val = seat_no.get()
         val = int(val)
-        # print(val)
-        # print(seat_no_values)
         seat_no_values.remove(val)
         seat_no['values'] = seat_no_values
         seat_no.set("--select--")
@@ -212,7 +211,6 @@ def custom():
             selected_seat_no_idx = i
         try:
             val = sel_val
-            # val = selected_seat_no.get(0, END).index(val)
             val = selected_seat_no_idx
             selected_seat_no.delete(val)
 
@@ -226,15 +224,16 @@ def custom():
             print(booked_seats)
         except Exception as e:
             print(e)
-            # pass
 
     seat_no.bind("<<ComboboxSelected>>", selected_seat)
     selected_seat_no.bind("<<ListboxSelect>>", deselect_seat)
 
     def search_customer():
         if login_name.get() != "":
+            conn = get_db()
+            cur = conn.cursor()
             cur.execute(
-                f"SELECT customer_name, phone_no, email, address FROM emp.customer where login_name='{login_name.get()}'")
+                f"SELECT customer_name, phone_no, email, address FROM customer where login_name='{login_name.get()}'")
             row = cur.fetchone()
             if row is not None:
                 customer.insert(0, row[0])
@@ -243,6 +242,7 @@ def custom():
                 address.insert(0, row[3])
             else:
                 messagebox.showinfo("Not found", "Username not found!")
+            conn.close()
         else:
             messagebox.showinfo("?", "Enter username first!")
 
@@ -252,6 +252,3 @@ def custom():
     b2 = Button(root, text='Book', command=next_page, width=27, bg="lightgreen", font=('arial', 11, 'bold'))
     b2.place(x=300, y=350)
     root.mainloop()
-
-
-# custom()

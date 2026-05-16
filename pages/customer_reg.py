@@ -1,17 +1,15 @@
 from tkinter import *
-import mysql.connector
+from database import get_db
 from tkinter import messagebox
-
-conn = mysql.connector.connect(host='localhost', user='root', password='madhu123', database='emp')
-cur = conn.cursor()
 
 
 def custom0(win):
-# def custom0():
     registered = False
     def submit():
+        conn = get_db()
+        cur = conn.cursor()
         if(login_name.get()!=''):
-            cur.execute(f"select * from emp.customer where login_name='{login_name.get()}'")
+            cur.execute(f"select * from customer where login_name='{login_name.get()}'")
             if (cur.fetchone()==None):
                 if(customer.get()!='' and phone_num.get()!='' and email.get()!='' and address.get()!=''):
                     nonlocal registered
@@ -27,20 +25,18 @@ def custom0(win):
                 registered = True
         else:
             messagebox.showinfo("Nope", "Input fields must not be empty like your brain!")
+        conn.close()
 
     def go():
         import customer
         customer.custom()
 
-    # root = Tk()
     root = Toplevel()
     root.geometry("860x460")
     root.title("customer Registration")
     photo = PhotoImage(file="assests/customer_reg.png")
     label = Label(root,image=photo)
     label.pack()
-    # label = Label(root, text="Customer Details")
-    # label.place(x=350, y=15)
 
     login_name_l = Label(root, text="1. Login Name:",bg="white",font=("arial",14,"bold"))
     login_name_l.place(x=280, y=20)
@@ -76,10 +72,3 @@ def custom0(win):
     b1.place(x=280, y=260,height=30)
 
     root.mainloop()
-# custom0()
-
-
-
-
-
-

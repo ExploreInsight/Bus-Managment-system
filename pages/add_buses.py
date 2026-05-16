@@ -1,23 +1,22 @@
 from tkinter import *
-import mysql.connector
+from database import get_db
 from tkinter import messagebox
 from tkcalendar import DateEntry
-
-conn = mysql.connector.connect(host='localhost', user='root', password='madhu123', database='emp')
-cur = conn.cursor()
 
 
 def funct2(win):
     def submit():
+        conn = get_db()
+        cur = conn.cursor()
         total_seats = no.get()
         avail_seats = ""
         for i in range(int(total_seats)):
             avail_seats += f"{i+1} "
         insert_query = f" INSERT INTO bus (bus_no,bus_name,no_of_seats,model_no,purchase_date,purchase_cost, avail_seats) VALUES ('{num.get()}','{name.get()}','{no.get()}','{m_num.get()}','{purch_date.get()}','{purch_cost.get()}', '{avail_seats}')"
         cur.execute(insert_query)
-
         messagebox.showinfo("Data submitted", "Data submitted successfully")
         conn.commit()
+        conn.close()
 
     def clear():
         num.delete(0, END)
@@ -42,7 +41,6 @@ def funct2(win):
     m_num_l.place(x=300, y=90)
     m_num = Entry(root, width=25, bg="white")
     m_num.place(x=430, y=97)
-
 
 
     name_l = Label(root, font=('arial', 16, 'bold'), text="3.Name Of bus:", bg="white")
@@ -72,5 +70,3 @@ def funct2(win):
     b2.place(x=650, y=425)
 
     root.mainloop()
-
-

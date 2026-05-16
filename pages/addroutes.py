@@ -1,19 +1,19 @@
 from tkinter import *
-import mysql.connector
+from database import get_db
 from tkinter import messagebox
 import route_allotment
-
-conn = mysql.connector.connect(host='localhost', user='root', password='madhu123', database='emp')
-cur = conn.cursor()
 
 
 def funct3(win):
 
     def submit():
-        insert_query = f" INSERT INTO routes (route_no,start,end,route_name) VALUES ('{num.get()}','{start.get()}','{end.get()}','{dis.get()}','{route.get()}')"
+        conn = get_db()
+        cur = conn.cursor()
+        insert_query = f"INSERT INTO routes (route_no,route_name,start,end,route_distance) VALUES ('{num.get()}','{route.get()}','{start.get()}','{end.get()}','{dis.get()}')"
         cur.execute(insert_query)
         messagebox.showinfo("Data submitted", "Data submitted successfully")
         conn.commit()
+        conn.close()
 
     def next_new():
         route_allotment.allot()

@@ -1,18 +1,19 @@
 from tkinter import *
-import mysql.connector
+from database import get_db
 from tkinter import messagebox
-conn = mysql.connector.connect(host='localhost', user='root', password='madhu123', database='emp')
-cur = conn.cursor()
 
 def dele2():
 
     def remove():
+        conn = get_db()
+        cur = conn.cursor()
         if (delete_entry.get() == ""):
             messagebox.showinfo('user', "Enter the ID :")
         else:
-            exe = cur.execute(f"delete from bus where bus_no={delete_entry.get()}")
+            cur.execute(f"delete from bus where bus_no={delete_entry.get()}")
             conn.commit()
             messagebox.showinfo('user', "Bus Removed Successfully")
+        conn.close()
 
     root = Toplevel()
     root.title("delete_buses")

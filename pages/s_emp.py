@@ -1,8 +1,6 @@
 from tkinter import *
 from tkinter import ttk
-import mysql.connector
-conn = mysql.connector.connect(host='localhost', user='root', password='madhu123', database='emp')
-cur = conn.cursor()
+from database import get_db
 
 
 def emp():
@@ -15,15 +13,15 @@ def emp():
     tv = ttk.Treeview(root)
 
     def get_route_info():
-        """return list of tuples"""
+        conn = get_db()
+        cur = conn.cursor()
         cur.execute(f"select id_emp,name_emp,father_name,dob,email,gender,phone_no,desiganation,address from add_emp")
-        return cur.fetchall()
+        rows = cur.fetchall()
+        conn.close()
+        return rows
 
-    # specify columns, where each element in tuple is treeViewID
     tv['columns'] = ('id_emp', 'name_emp', 'father_name', 'dob', 'email', 'gender', 'phone_no', 'desiganation','address')
 
-    # format columns using treeViewID
-    # column with #0ID is a ghost column
     tv.column('#0', width=-30, minwidth=0)
     tv.column('id_emp', width=20, minwidth=5)
     tv.column('name_emp', width=40, minwidth=20)
@@ -35,7 +33,6 @@ def emp():
     tv.column('desiganation', width=40, minwidth=20)
     tv.column('address', width=40, minwidth=20)
 
-    # specify headings to columns
     tv.heading('id_emp', text="Employee Id")
     tv.heading('name_emp', text="Employee Name")
     tv.heading('father_name', text="Father Name")
@@ -46,7 +43,6 @@ def emp():
     tv.heading('desiganation', text="Job")
     tv.heading('address', text=" Address")
 
-    # inserting data into treeView
     rows = get_route_info()
     for row in rows:
         tv.insert(parent='', index='end', values=row)

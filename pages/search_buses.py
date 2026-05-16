@@ -1,11 +1,11 @@
 from tkinter import *
 from tkcalendar import DateEntry
-import mysql.connector
+from database import get_db
 
 
 def sea2():
     def view():
-        conn = mysql.connector.connect(host='localhost', user='root', password='madhu123', database='emp')
+        conn = get_db()
         cur = conn.cursor()
         cur.execute(
             f"select model_no,bus_name,no_of_seats,purchase_date,purchase_cost from bus where bus_no='{num.get()}'")
@@ -14,6 +14,7 @@ def sea2():
         for i in row:
             list[j].set(i)
             j += 1
+        conn.close()
 
     root = Toplevel()
     root.title("Search_buses")
