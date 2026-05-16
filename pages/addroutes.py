@@ -11,8 +11,8 @@ def funct3(win):
         cur = conn.cursor()
         insert_query = f"INSERT INTO routes (route_no,route_name,start,end,route_distance) VALUES ('{num.get()}','{route.get()}','{start.get()}','{end.get()}','{dis.get()}')"
         cur.execute(insert_query)
-        messagebox.showinfo("Data submitted", "Data submitted successfully")
         conn.commit()
+        messagebox.showinfo("Data submitted", "Data submitted successfully")
         conn.close()
 
     def next_new():

@@ -10,8 +10,8 @@ def allot():
         cur = conn.cursor()
         insert_query = f" INSERT INTO route_duty_allotment (route_no,dep_time,reach_time,bus_no,id_emp) VALUES ('{num.get()}','{dep.get()}','{rec.get()}','{bus.get()}','{id.get()}')"
         cur.execute(insert_query)
-        messagebox.showinfo("Data submitted", "Route Successfully Allotted")
         conn.commit()
+        messagebox.showinfo("Data submitted", "Route Successfully Allotted")
         conn.close()
 
     def show_info():

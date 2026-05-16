@@ -14,8 +14,8 @@ def funct2(win):
             avail_seats += f"{i+1} "
         insert_query = f" INSERT INTO bus (bus_no,bus_name,no_of_seats,model_no,purchase_date,purchase_cost, avail_seats) VALUES ('{num.get()}','{name.get()}','{no.get()}','{m_num.get()}','{purch_date.get()}','{purch_cost.get()}', '{avail_seats}')"
         cur.execute(insert_query)
-        messagebox.showinfo("Data submitted", "Data submitted successfully")
         conn.commit()
+        messagebox.showinfo("Data submitted", "Data submitted successfully")
         conn.close()
 
     def clear():

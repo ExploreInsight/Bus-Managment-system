@@ -39,8 +39,8 @@ def funct(win):
         address = t8.get()
         insert_query = f"INSERT INTO add_emp (name_emp,father_name,dob,email,gender,phone_no,desiganation,address, image) VALUES ('{name_emp}','{father_name}','{dob}','{email}','{gender}','{phone_no}','{marital_status}','{address}', '{global_img_path}') "
         cur.execute(insert_query)
-        messagebox.showinfo("Data submitted","Data submitted successfully")
         conn.commit()
+        messagebox.showinfo("Data submitted","Data submitted successfully")
         conn.close()
 
     def clear():

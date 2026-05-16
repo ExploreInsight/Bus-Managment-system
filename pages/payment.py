@@ -13,8 +13,8 @@ def pay_ment(win):
         if (row is None):
             insert_query = f"insert into pay(login_name, bus_no, start, end, dep_time, rech_time, total_charges, seat_no) values('{login_name.get()}','{bus.get()}','{loc.get()}','{det.get()}','{dep.get()}','{rec.get()}','{charges.get()}','{seat.get()}')"
             cur.execute(insert_query)
-            messagebox.showinfo("Done", "Payment done!")
             conn.commit()
+            messagebox.showinfo("Done", "Payment done!")
         else:
             messagebox.showinfo("Psych!", "Already paid!!")
         conn.close()
