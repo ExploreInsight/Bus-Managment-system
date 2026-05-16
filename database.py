@@ -5,8 +5,9 @@ DB_PATH = os.getenv("DB_PATH", os.path.join(os.path.dirname(os.path.abspath(__fi
 
 
 def get_db():
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=10)
     conn.execute("PRAGMA foreign_keys = ON")
+    conn.execute("PRAGMA journal_mode = WAL")
     return conn
 
 
